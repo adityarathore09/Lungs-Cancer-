@@ -1,0 +1,8 @@
+€•_      Œsklearn.linear_model._logistic”ŒLogisticRegression”“”)”}”(Œ penalty”Œl2”Œdual”‰Œtol”G?6âëC-ŒC”G?ð      Œ
+fit_intercept”ˆŒintercept_scaling”KŒclass_weight”NŒrandom_state”NŒsolver”Œlbfgs”Œmax_iter”M,Œmulti_class”Œ
+deprecated”Œ verbose”K Œ
+warm_start”‰Œn_jobs”NŒl1_ratio”NŒfeature_names_in_”Œnumpy._core.multiarray”Œ_reconstruct”“”Œnumpy”Œ ndarray”“”K …”Cb”‡”R”(KK…”hŒdtype”“”ŒO8”‰ˆ‡”R”(KŒ|”NNNJÿÿÿÿJÿÿÿÿK?t”b‰]”(ŒGENDER”ŒAGE”Œ SMOKING”ŒYELLOW_FINGERS”Œ ANXIETY”Œ
+PEER_PRESSURE”ŒCHRONIC_DISEASE”Œ FATIGUE”Œ ALLERGY”ŒWHEEZING”ŒALCOHOL_CONSUMING”ŒCOUGHING”ŒSHORTNESS_OF_BREATH”ŒSWALLOWING_DIFFICULTY”Œ
+CHEST_PAIN”et”bŒn_features_in_”KŒclasses_”hhK …”h‡”R”(KK…”h$Œi8”‰ˆ‡”R”(KŒ<”NNNJÿÿÿÿJÿÿÿÿK t”b‰C               ”t”bŒ n_iter_”hhK …”h‡”R”(KK…”h$Œi4”‰ˆ‡”R”(KhDNNNJÿÿÿÿJÿÿÿÿK t”b‰C"   ”t”bŒcoef_”hhK …”h‡”R”(KKK†”h$Œf8”‰ˆ‡”R”(KhDNNNJÿÿÿÿJÿÿÿÿK t”b‰Cx$½å&*=¶?ôœ>„v¿6°Ôá³¹¢?üz>6¸?²˜WO¬¿
+·æJ¡°¿ñÂvN±Û©¿ü•ÛïÚ€˜¿zV=7´”?ÉL,¤MÅ¿¹ ‡»@G´¿™‡B¸Ü}Á?ÉI#Ø¶¿Ìy‹TÃ ¿’¼Y^jŸ?”t”bŒ
+intercept_”hhK …”h‡”R”(KK…”hZ‰CNÓãPÒä?”t”bŒ_sklearn_version”Œ1.6.1”ub.
