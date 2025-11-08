@@ -1,8 +1,21 @@
 {% extends "base.html" %}
-{% block title %}Login - Student Health Portal{% endblock %}
+{% block title %}Login - Lung Cancer predictor{% endblock %}
 
 {% block content %}
-<div class="flex flex-col items-center justify-center mt-20 fade-in">
+<!-- Force navbar for login page -->
+<nav class="fixed top-0 left-0 w-full bg-slate-900/90 backdrop-blur-md text-white shadow-md z-50">
+  <div class="flex justify-between items-center px-6 py-3">
+    <h1 class="text-2xl font-semibold text-cyan-300">Lung Cancer predictor</h1>
+    
+      <a href="/" class="bg-cyan-400 text-black px-3 py-1 rounded-md font-semibold hover:bg-cyan-300 transition-all">
+        Login
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Login Form -->
+<div class="flex flex-col items-center justify-center mt-32 fade-in">
   <div class="card w-full max-w-md text-center">
     <h1 class="text-3xl font-semibold text-cyan-300 mb-4">🔐 Login</h1>
 
@@ -22,7 +35,6 @@
              class="w-full mb-3 p-2 rounded-md bg-white/20 text-white placeholder-gray-300 focus:outline-none">
       <input type="password" name="password" placeholder="Password" required
              class="w-full mb-3 p-2 rounded-md bg-white/20 text-white placeholder-gray-300 focus:outline-none">
-
       <button type="submit"
               class="w-full bg-cyan-400 text-black font-semibold py-2 rounded-md hover:bg-cyan-300 transition-all">
         Login
