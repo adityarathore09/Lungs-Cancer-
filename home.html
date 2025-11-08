@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Home | Student Health Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>{% extends "base.html" %}
+{% block title %}Page Title - Student Health Portal{% endblock %}
+{% block content %}
+
+
 
   <style>
     body {
@@ -101,7 +105,8 @@
     <div class="flip-card">
       <div class="flip-card-inner">
         <div class="flip-card-front bg-blue-500/30 flex flex-col items-center justify-center p-6 rounded-2xl shadow-md">
-          <img src="https://cdn-icons-png.flaticon.com/512/3917/3917526.png" class="w-16 mb-3" alt="Air Quality">
+          <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/airbnb.svg" class="w-16 mb-3" alt="air icon">
+
           <h3 class="text-xl font-bold text-white">🌬️ Breathe Clean Air</h3>
         </div>
         <div class="flip-card-back bg-indigo-500/20 flex items-center justify-center p-5 rounded-2xl text-center">
@@ -190,14 +195,7 @@
       <div class="absolute inset-0 bg-gradient-to-br from-cyan-400/10 via-transparent to-emerald-400/10 opacity-0 group-hover:opacity-100 transition-all"></div>
     </div>
 
-    <!-- Navigation Buttons -->
-    <div class="text-center mt-8 space-x-4">
-      <a href="/predict" class="text-cyan-300 hover:text-cyan-100">🧠 Predict Risk</a>
-      <a href="/history" class="text-cyan-300 hover:text-cyan-100">📜 View History</a>
-      <a href="/leaving" class="text-cyan-300 hover:text-cyan-100">🚪 Exit</a>
-    </div>
-  </div>
-
+    
   <!-- 📈 Chart Script -->
   <script>
     async function loadAndDrawLungChart() {
@@ -271,3 +269,5 @@
   </script>
 </body>
 </html>
+{% endblock %}
+
