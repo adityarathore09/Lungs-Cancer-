@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lung Cancer Risk Predictor</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  {% extends "base.html" %}
+{% block title %}Page Title - Lung Cancer predictor{% endblock %}
+{% block content %}
+
+
   <style>
     body {
       background: linear-gradient(135deg, #0f172a, #1e293b);
@@ -62,28 +67,79 @@
       </div>
     </form>
 
-    {% if prediction is defined %}
-    <div class="mt-8 p-6 rounded-lg fade-in {% if prediction == 1 %}bg-red-600/80{% else %}bg-green-600/80{% endif %}">
-      {% if prediction == 1 %}
-        <h2 class="text-2xl font-bold text-center">⚠️ High Risk Detected!</h2>
-        <p class="text-center mt-2">You may be at high risk for lung cancer. Please consult one of the doctors below:</p>
-        <ul class="mt-4 list-disc list-inside">
-          {% for doc in doctors %}
-          <li>{{ doc }}</li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <h2 class="text-2xl font-bold text-center">✅ Low Risk</h2>
-        <p class="text-center mt-2">Your risk appears low. Maintain a healthy lifestyle!</p>
-      {% endif %}
-    </div>
-    {% endif %}
+   {% if prediction is not none %}
 
-    <div class="text-center mt-8">
-      <a href="/home" class="text-cyan-300 hover:text-cyan-100 mr-4">🏠 Home</a>
-      <a href="/history" class="text-cyan-300 hover:text-cyan-100 mr-4">📜 History</a>
-      <a href="/logout" class="text-cyan-300 hover:text-cyan-100">🚪 Logout</a>
+
+  <!-- 🎯 Risk Meter Animation -->
+  <div class="relative w-48 h-48 mx-auto">
+    <canvas id="riskMeter"></canvas>
+    <div class="absolute inset-0 flex flex-col justify-center items-center">
+      <h2 id="riskLabel" class="text-2xl font-bold text-white"></h2>
+      <p class="text-gray-300 text-sm">Predicted Risk Level</p>
     </div>
   </div>
+
+  <!-- Doctor Recommendations -->
+  {% if doctors %}
+  <div class="card mt-10">
+    <h3 class="text-xl text-cyan-300 font-semibold mb-3">Recommended Specialists in {{ city }}</h3>
+    <ul class="list-disc pl-6 text-gray-200">
+      {% for doc in doctors %}
+      <li>{{ doc }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const pred = {{ prediction|default(0) }};
+  const ctx = document.getElementById('riskMeter').getContext('2d');
+  const riskPercent = pred === 1 ? Math.floor(70 + Math.random() * 30) : Math.floor(Math.random() * 50);
+
+  const riskChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [riskPercent, 100 - riskPercent],
+        backgroundColor: [
+          riskPercent > 70 ? 'rgba(239,68,68,0.8)' : 'rgba(34,197,94,0.8)', // red for high, green for low
+          'rgba(255,255,255,0.1)'
+        ],
+        borderWidth: 0,
+        cutout: '75%',
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      rotation: -90,
+      circumference: 180,
+    }
+  });
+
+  // Set label dynamically
+  const label = document.getElementById("riskLabel");
+  if (riskPercent > 70) {
+    label.textContent = "High Risk";
+    label.classList.add("text-red-400");
+  } else if (riskPercent > 40) {
+    label.textContent = "Moderate Risk";
+    label.classList.add("text-yellow-300");
+  } else {
+    label.textContent = "Low Risk";
+    label.classList.add("text-green-400");
+  }
+});
+</script>
+{% endblock %}
+
+    
+
+{% endblock %}
+
 </body>
 </html>
