@@ -64,7 +64,7 @@ DOCTORS = {
         "Dr J C Suri – JCS Lung & Sleep Centre, Preet Vihar Delhi – +91 98101 66071",
         "AIIMS Oncology Dept – 011-26588500"
     ],
-    "newdelhi": [
+    "new delhi": [
         "Dr Kamran Ali – Max Super Speciality Hospital Saket – +91 63096 32220",
         "AIIMS Oncology OPD – 011-26588500"
     ],
