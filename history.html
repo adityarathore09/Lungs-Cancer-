@@ -1,113 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prediction History | Student Health Portal</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-    background: url("https://images.unsplash.com/photo-1588776814546-45f3c93a9e6d?auto=format&fit=crop&w=1920&q=80")
-                  no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Poppins', sans-serif;
-      color: #fff;
-      min-height: 100vh;
-      padding: 2rem;
-      backdrop-filter: blur(5px);
-    }
-    .overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(15, 23, 42, 0.8);
-      z-index: -1;
-    }
-    .fade-in {
-      animation: fadeIn 1.2s ease forwards;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .table-wrapper {
-      overflow-x: auto;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 1rem;
-      backdrop-filter: blur(10px);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      padding: 1rem;
-      text-align: center;
-    }
-    th {
-      background-color: rgba(34, 211, 238, 0.2);
-      font-weight: bold;
-      color: #22d3ee;
-    }
-    tr:nth-child(even) {
-      background-color: rgba(255, 255, 255, 0.05);
-    }
-    .low-risk {
-      color: #10b981; /* green */
-      font-weight: bold;
-    }
-    .high-risk {
-      color: #ef4444; /* red */
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body class="fade-in relative">
-  <div class="overlay"></div>
-  
-  <div class="max-w-5xl mx-auto relative z-10">
-    <h1 class="text-3xl font-bold text-cyan-300 mb-6 text-center drop-shadow-md">📜 Prediction History</h1>
+{% extends "base.html" %}
+{% block title %}History - Student Health Portal{% endblock %}
 
-    {% if data.empty %}
-      <div class="text-center text-gray-300 text-lg">
-        <p>No predictions found yet. Try the <a href="/predict" class="text-cyan-300 hover:text-cyan-100 underline">prediction page</a>!</p>
-      </div>
-    {% else %}
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>City</th>
-              <th>Prediction Result</th>
-              <th>Timestamp</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for row in data.itertuples() %}
-            <tr>
-              <td>{{ row.id }}</td>
-              <td class="capitalize">{{ row.city }}</td>
+{% block content %}
+<div class="fade-in-up mt-10">
+  <h1 class="text-3xl font-bold text-cyan-300 text-center mb-6">📜 Your Health Prediction History</h1>
+
+  {% if data.empty %}
+    <div class="text-center text-gray-400 text-lg mt-10">
+      😕 No history found yet. Run a prediction to see your results here!
+    </div>
+  {% else %}
+    <div class="overflow-x-auto">
+      <table class="w-full text-center text-gray-200 border-collapse bg-white/5 rounded-2xl shadow-lg overflow-hidden">
+        <thead class="bg-cyan-500/30 text-white text-sm uppercase tracking-wide">
+          <tr>
+            <th class="px-4 py-3">#</th>
+            <th class="px-4 py-3">City</th>
+            <th class="px-4 py-3">Result</th>
+            <th class="px-4 py-3">Date & Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data.itertuples() %}
+          <tr class="border-b border-white/10 hover:bg-white/10 transition duration-300">
+            <td class="px-4 py-3 text-gray-300">{{ loop.index }}</td>
+            <td class="px-4 py-3">{{ row.city.title() }}</td>
+            <td class="px-4 py-3">
               {% if row.result == 1 %}
-                <td class="high-risk">⚠️ High Risk</td>
+                <span class="bg-red-500/30 text-red-300 px-3 py-1 rounded-full font-semibold">High Risk 🚨</span>
               {% else %}
-                <td class="low-risk">✅ Low Risk</td>
+                <span class="bg-green-500/30 text-green-300 px-3 py-1 rounded-full font-semibold">Low Risk ✅</span>
               {% endif %}
-              <td>{{ row.timestamp }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% endif %}
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-400">{{ row.timestamp }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
 
-    <div class="text-center mt-8 space-x-4">
-      <a href="/home" class="text-cyan-300 hover:text-cyan-100">🏠 Home</a>
-      <a href="/predict" class="text-cyan-300 hover:text-cyan-100">🧠 Predict Again</a>
-      <a href="/logout" class="text-cyan-300 hover:text-cyan-100">🔒 Logout</a>
+  <!-- Summary Section -->
+  <div class="mt-10 grid md:grid-cols-2 gap-6">
+    <div class="bg-white/10 p-5 rounded-xl shadow-md text-center hover:bg-white/20 transition-all">
+      <h3 class="text-xl text-emerald-300 font-semibold mb-2">✅ Total Predictions</h3>
+      <p class="text-3xl font-bold text-white">{{ data.shape[0] }}</p>
+    </div>
+    <div class="bg-white/10 p-5 rounded-xl shadow-md text-center hover:bg-white/20 transition-all">
+      {% set high_risk = data[data['result']==1].shape[0] %}
+      <h3 class="text-xl text-red-400 font-semibold mb-2">🚨 High Risk Cases</h3>
+      <p class="text-3xl font-bold text-red-300">{{ high_risk }}</p>
     </div>
   </div>
-</body>
-</html>
+
+  <!-- Chart Placeholder -->
+  <div class="card mt-10">
+    <h2 class="text-2xl font-semibold text-cyan-300 mb-4 text-center">📈 Risk Trend Over Time</h2>
+    <canvas id="historyChart" height="100"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('historyChart');
+  const labels = {{ data['timestamp'].tolist() | safe }};
+  const riskData = {{ data['result'].tolist() | safe }};
+  
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels.reverse(),
+      datasets: [{
+        label: 'Risk Level (1=High, 0=Low)',
+        data: riskData.reverse(),
+        fill: true,
+        borderColor: 'rgba(56,189,248,1)',
+        backgroundColor: 'rgba(56,189,248,0.2)',
+        tension: 0.4,
+        borderWidth: 2,
+        pointBackgroundColor: riskData.map(v => v === 1 ? 'red' : 'limegreen'),
+        pointRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          ticks: { color: 'white', stepSize: 1 },
+          grid: { color: 'rgba(255,255,255,0.1)' }
+        },
+        x: {
+          ticks: { color: 'white', autoSkip: true, maxTicksLimit: 5 },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: { labels: { color: 'white' } }
+      }
+    }
+  });
+</script>
+{% endblock %}
