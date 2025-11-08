@@ -10,8 +10,31 @@
       😕 No history found yet. Run a prediction to see your results here!
     </div>
   {% else %}
+
+    <!-- Filter + Download Controls -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-3">
+      <div>
+        <label for="filterSelect" class="text-gray-200 mr-2 font-semibold">Filter:</label>
+        <select id="filterSelect"
+                class="bg-white/20 text-white p-2 rounded-md border border-white/30 focus:outline-none hover:bg-white/30 transition">
+          <option value="all">Show All</option>
+          <option value="high">High Risk Only</option>
+          <option value="low">Low Risk Only</option>
+        </select>
+      </div>
+
+      <div class="flex gap-3">
+      
+        <button id="downloadPDF"
+                class="bg-cyan-400 hover:bg-cyan-300 text-black px-4 py-2 rounded-md font-semibold transition-all">
+          🧾 Download PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- History Table -->
     <div class="overflow-x-auto">
-      <table class="w-full text-center text-gray-200 border-collapse bg-white/5 rounded-2xl shadow-lg overflow-hidden">
+      <table id="historyTable" class="w-full text-center text-gray-200 border-collapse bg-white/5 rounded-2xl shadow-lg overflow-hidden">
         <thead class="bg-cyan-500/30 text-white text-sm uppercase tracking-wide">
           <tr>
             <th class="px-4 py-3">#</th>
@@ -22,7 +45,8 @@
         </thead>
         <tbody>
           {% for row in data.itertuples() %}
-          <tr class="border-b border-white/10 hover:bg-white/10 transition duration-300">
+          <tr class="border-b border-white/10 hover:bg-white/10 transition duration-300"
+              data-result="{{ 'high' if row.result == 1 else 'low' }}">
             <td class="px-4 py-3 text-gray-300">{{ loop.index }}</td>
             <td class="px-4 py-3">{{ row.city.title() }}</td>
             <td class="px-4 py-3">
@@ -38,47 +62,50 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Summary Cards -->
+    <div class="mt-10 grid md:grid-cols-2 gap-6">
+      <div class="bg-white/10 p-5 rounded-xl shadow-md text-center hover:bg-white/20 transition-all">
+        <h3 class="text-xl text-emerald-300 font-semibold mb-2">✅ Total Predictions</h3>
+        <p class="text-3xl font-bold text-white">{{ data.shape[0] }}</p>
+      </div>
+      <div class="bg-white/10 p-5 rounded-xl shadow-md text-center hover:bg-white/20 transition-all">
+        {% set high_risk = data[data['result']==1].shape[0] %}
+        <h3 class="text-xl text-red-400 font-semibold mb-2">🚨 High Risk Cases</h3>
+        <p class="text-3xl font-bold text-red-300">{{ high_risk }}</p>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="card mt-10">
+      <h2 class="text-2xl font-semibold text-cyan-300 mb-4 text-center">📈 Risk Trend Over Time</h2>
+      <canvas id="historyChart" height="100"></canvas>
+    </div>
   {% endif %}
-
-  <!-- Summary Section -->
-  <div class="mt-10 grid md:grid-cols-2 gap-6">
-    <div class="bg-white/10 p-5 rounded-xl shadow-md text-center hover:bg-white/20 transition-all">
-      <h3 class="text-xl text-emerald-300 font-semibold mb-2">✅ Total Predictions</h3>
-      <p class="text-3xl font-bold text-white">{{ data.shape[0] }}</p>
-    </div>
-    <div class="bg-white/10 p-5 rounded-xl shadow-md text-center hover:bg-white/20 transition-all">
-      {% set high_risk = data[data['result']==1].shape[0] %}
-      <h3 class="text-xl text-red-400 font-semibold mb-2">🚨 High Risk Cases</h3>
-      <p class="text-3xl font-bold text-red-300">{{ high_risk }}</p>
-    </div>
-  </div>
-
-  <!-- Chart Placeholder -->
-  <div class="card mt-10">
-    <h2 class="text-2xl font-semibold text-cyan-300 mb-4 text-center">📈 Risk Trend Over Time</h2>
-    <canvas id="historyChart" height="100"></canvas>
-  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
 <script>
-  const ctx = document.getElementById('historyChart');
   const labels = {{ data['timestamp'].tolist() | safe }};
-  const riskData = {{ data['result'].tolist() | safe }};
-  
-  new Chart(ctx, {
+  const results = {{ data['result'].tolist() | safe }};
+
+  const ctx = document.getElementById('historyChart');
+  const chartConfig = {
     type: 'line',
     data: {
       labels: labels.reverse(),
       datasets: [{
         label: 'Risk Level (1=High, 0=Low)',
-        data: riskData.reverse(),
+        data: results.reverse(),
         fill: true,
         borderColor: 'rgba(56,189,248,1)',
         backgroundColor: 'rgba(56,189,248,0.2)',
         tension: 0.4,
         borderWidth: 2,
-        pointBackgroundColor: riskData.map(v => v === 1 ? 'red' : 'limegreen'),
+        pointBackgroundColor: results.map(v => v === 1 ? 'red' : 'limegreen'),
         pointRadius: 5
       }]
     },
@@ -90,7 +117,7 @@
           grid: { color: 'rgba(255,255,255,0.1)' }
         },
         x: {
-          ticks: { color: 'white', autoSkip: true, maxTicksLimit: 5 },
+          ticks: { color: 'white', autoSkip: true, maxTicksLimit: 6 },
           grid: { display: false }
         }
       },
@@ -98,6 +125,81 @@
         legend: { labels: { color: 'white' } }
       }
     }
+  };
+  const lungChart = new Chart(ctx, chartConfig);
+
+  // 🔍 Filtering Logic
+  document.getElementById('filterSelect').addEventListener('change', function () {
+    const filter = this.value;
+    const rows = document.querySelectorAll('#historyTable tbody tr');
+
+    rows.forEach(row => {
+      const resultType = row.getAttribute('data-result');
+      row.style.display = (filter === 'all' || resultType === filter) ? '' : 'none';
+    });
+
+    // Update Chart
+    let filteredLabels = [], filteredResults = [];
+    rows.forEach((row, i) => {
+      if (row.style.display !== 'none') {
+        filteredLabels.push(labels[i]);
+        filteredResults.push(results[i]);
+      }
+    });
+
+    lungChart.data.labels = filteredLabels.reverse();
+    lungChart.data.datasets[0].data = filteredResults.reverse();
+    lungChart.data.datasets[0].pointBackgroundColor = filteredResults.map(v => v === 1 ? 'red' : 'limegreen');
+    lungChart.update();
   });
+
+ 
+ // 🧾 Export PDF (FIXED)
+document.getElementById('downloadPDF').addEventListener('click', async () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("p", "mm", "a4");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  doc.text("Student Health Portal - Lung Cancer Prediction Report", 14, 20);
+  doc.setFontSize(11);
+  doc.text("Generated on: " + new Date().toLocaleString(), 14, 28);
+
+  // Capture chart
+  const chartCanvas = document.getElementById("historyChart");
+  const chartImg = chartCanvas.toDataURL("image/png", 1.0);
+  doc.addImage(chartImg, "PNG", 15, 35, 180, 70);
+  let yPos = 110;
+
+  // Collect visible rows
+  const rows = [];
+  document.querySelectorAll('#historyTable tbody tr').forEach(row => {
+    if (row.style.display !== 'none') {
+      const cols = row.querySelectorAll('td');
+      let resultText = cols[2].innerText.includes('High') ? 'High Risk' : 'Low Risk';
+      rows.push([
+        cols[0].innerText.trim(),
+        cols[1].innerText.trim(),
+        resultText,
+        cols[3].innerText.trim()
+      ]);
+    }
+  });
+
+  // Generate formatted table
+  doc.autoTable({
+    startY: yPos,
+    head: [['#', 'City', 'Result', 'Date & Time']],
+    body: rows,
+    theme: 'grid',
+    headStyles: { fillColor: [56, 189, 248], textColor: 255 },
+    styles: { fontSize: 10, cellPadding: 3 },
+    alternateRowStyles: { fillColor: [240, 240, 240] },
+  });
+
+  doc.save("prediction_history.pdf");
+});
+
 </script>
+
 {% endblock %}
