@@ -1,5 +1,8 @@
-Flask==3.0.3
-gunicorn==23.0.0
+Flask
+gunicorn
+pickle5
+tensorflow
+scikit-learn
 numpy
 pandas
-scikit-learn
+
