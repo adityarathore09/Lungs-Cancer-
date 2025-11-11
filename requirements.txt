@@ -1,6 +1,5 @@
 Flask
 gunicorn
-pickle5
 tensorflow
 scikit-learn
 numpy
